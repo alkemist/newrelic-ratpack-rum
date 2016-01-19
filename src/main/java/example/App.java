@@ -1,5 +1,6 @@
 package example;
 
+import ratpack.error.ClientErrorHandler;
 import ratpack.groovy.Groovy;
 import ratpack.groovy.template.MarkupTemplateModule;
 import ratpack.guice.Guice;
@@ -12,6 +13,7 @@ public class App {
       .serverConfig(s -> s.baseDir(BaseDir.find()))
       .registry(Guice.registry(r -> r
         .module(MarkupTemplateModule.class)
+        .bindInstance(ClientErrorHandler.class, (ctx, code) -> ctx.getResponse().status(code).send())
       ))
       .handlers(c -> c
         .get(ctx -> ctx.render(Groovy.groovyMarkupTemplate("page.gtpl")))
