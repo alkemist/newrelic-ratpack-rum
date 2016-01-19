@@ -14,7 +14,7 @@ public class App {
         .module(MarkupTemplateModule.class)
       ))
       .handlers(c -> c
-        .all(ctx -> ctx.render(Groovy.groovyMarkupTemplate("page.gtpl")))
+        .get(ctx -> ctx.render(Groovy.groovyMarkupTemplate("page.gtpl")))
       )
     );
   }
