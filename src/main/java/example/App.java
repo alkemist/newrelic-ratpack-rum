@@ -1,6 +1,7 @@
 package example;
 
 import ratpack.error.ClientErrorHandler;
+import ratpack.exec.Blocking;
 import ratpack.groovy.Groovy;
 import ratpack.groovy.template.MarkupTemplateModule;
 import ratpack.guice.Guice;
@@ -16,7 +17,11 @@ public class App {
         .bindInstance(ClientErrorHandler.class, (ctx, code) -> ctx.getResponse().status(code).send())
       ))
       .handlers(c -> c
-        .get(ctx -> ctx.render(Groovy.groovyMarkupTemplate("page.gtpl")))
+        .get("work", ctx -> ctx.render(Groovy.groovyMarkupTemplate("page.gtpl")))
+        .get("no-work", ctx ->
+          Blocking.get(() -> 1) // This causes execution to jump off the thread and “escape” the New Relic transaction
+            .then(val -> ctx.render(Groovy.groovyMarkupTemplate("page.gtpl")))
+        )
       )
     );
   }
